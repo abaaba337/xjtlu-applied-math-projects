@@ -1,5 +1,7 @@
 # XJTLU Applied Mathematics Projects
 
+<p><a href="README.md"><kbd><strong>简体中文 ✓</strong></kbd></a> &nbsp; <a href="README.en.md"><kbd>English</kbd></a></p>
+
 西交利物浦大学本科阶段的科研、数学建模与计算实验。四个项目分别组织代码、报告和运行说明，学习材料、后续代码整理与已验证结果在各项目中明确区分。
 
 | 项目 | 研究内容 | 从这里开始 |
