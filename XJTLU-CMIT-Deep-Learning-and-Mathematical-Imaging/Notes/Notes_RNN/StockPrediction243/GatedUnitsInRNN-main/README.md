@@ -1,47 +1,22 @@
 # GatedUnitsInRNN
-GRU and LSTM implementation in PyTorch for StockPrediction.
 
-# LSTM implementation
-```python
-class CellLSTM(nn.Module):
-    def __init__(self, in_features, out_features, units=100, prob=False):
-        super(CellLSTM, self).__init__()
-        self.units = units
-        self.prob = prob
-        self.h = torch.zeros(1, units).type(torch.FloatTensor)
-        self.c_t = torch.zeros(1, units).type(torch.FloatTensor)
+GRU and LSTM implementation in PyTorch for StockPrediction, retained as a CMIT teaching example.
 
-        self.w_xh = Parameter(torch.rand(in_features, units), requires_grad=True)
- 
-        ### Initialize the weights of update-forget-output gates ###
-        self.w_h_c = Parameter(torch.rand(units, units), requires_grad=True) # for c_tilda
-        self.w_h_u = Parameter(torch.rand(units, units), requires_grad=True)
-        self.w_h_f = Parameter(torch.rand(units, units), requires_grad=True)
-        self.w_h_o = Parameter(torch.rand(units, units), requires_grad=True)
+Run from this folder, with the CMIT dependencies installed:
 
-    def reset_hidden_state(self):
-        self.c_t = torch.zeros(1, self.units).type(torch.FloatTensor)
-        self.h   = torch.zeros(1, self.units).type(torch.FloatTensor)
-
-    def forward(self, inputs):
-        x = torch.matmul(inputs, self.w_xh)
-
-        if(torch.isnan(x).any()):
-            print("INPUTS : ", inputs)
-            print("X_t : ", x_t)
-            print("H : ", self.h)
-            print("X_t + H : ", x)
-
-        c_tilda = torch.tanh(torch.matmul(x, self.w_h_c))
-        gamma_u = torch.sigmoid(torch.matmul(x, self.w_h_u))
-        gamma_f = torch.sigmoid(torch.matmul(x, self.w_h_f))
-        gamma_o = torch.sigmoid(torch.matmul(x, self.w_h_o))
-
-        self.c_t = torch.mul(gamma_u, c_tilda) + torch.mul(gamma_f, self.c_t)
-        self.h   = torch.mul(gamma_o,torch.tanh(self.c_t))
-
-        return self.c_t, self.h
+```sh
+python train.py --epochs 2 --max-rows 48
+python visualize_stock.py
 ```
 
-# LSTM Training results :
-![LSTM results](./images/results_lstm.png)
+`datasets.py` reads Date/High/Low, sorts unique dates, and returns disjoint chronological training/test arrays. `train.py` fits scaling only on training data, trains the custom cells in `models.py` through `network.py`, and resets state for evaluation without retaining a gradient graph. These cells retain their teaching equations; they are not replacements for the standard PyTorch LSTM/GRU implementations.
+
+Remove `--max-rows` for the full CSV. Training starts fresh and writes no file unless `--output` is specified; a supplied output path must not exist. The existing `checkpoint.pt` is preserved and is not automatically loaded. Saved checkpoints contain model weights, test loss and the training scaler parameters.
+
+Regression checks live at the CMIT project root: `python -m unittest -v`. See the [CMIT guide](../../../../README.md) for the full environment and notebook routes.
+
+## Retained historical illustration
+
+The following image is part of the teaching material, not a result from the current smoke run:
+
+![Historical LSTM results](images/results_lstm.png)

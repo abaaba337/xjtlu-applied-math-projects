@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ipynb_checkpoints/
+.env
+.DS_Store
+Thumbs.db
+XJTLU-CMIT-Deep-Learning-and-Mathematical-Imaging/Notes/Notes_IMProcess/DRIVE/
+XJTLU-CMIT-Deep-Learning-and-Mathematical-Imaging/**/MNIST/
+XJTLU-CMIT-Deep-Learning-and-Mathematical-Imaging/**/FashionMNIST/
+**/results/

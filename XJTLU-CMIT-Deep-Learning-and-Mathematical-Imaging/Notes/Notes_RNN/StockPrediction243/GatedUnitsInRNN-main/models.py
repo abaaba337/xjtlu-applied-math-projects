@@ -1,6 +1,5 @@
 import torch
 import torch.nn as nn
-import torch.optim as optim
 import torch.nn.functional as F
 
 from torch.nn.parameter import Parameter
@@ -30,8 +29,8 @@ class CellGRU(nn.Module):
         nn.init.xavier_uniform_(self.w_h_y)
 
     def reset_hidden_state(self):
-        self.c_t = torch.zeros(1, self.units)
-        self.h   = torch.zeros(1, self.units)
+        self.c_t = self.w_xh.new_zeros(1, self.units)
+        self.h = self.w_xh.new_zeros(1, self.units)
 
     def forward(self, inputs):
         ### Since c_t and a_t is the same, no need to add c_t as input ###
@@ -45,7 +44,7 @@ class CellGRU(nn.Module):
 
         y = torch.matmul(self.h, self.w_h_y)
         if(self.prob):
-            y = F.softmax(y)
+            y = F.softmax(y, dim=-1)
 
         return y, self.h
 
@@ -74,17 +73,14 @@ class CellLSTM(nn.Module):
         # nn.init.xavier_uniform_(self.w_hy)
 
     def reset_hidden_state(self):
-        self.c_t = torch.zeros(1, self.units).type(torch.FloatTensor)
-        self.h   = torch.zeros(1, self.units).type(torch.FloatTensor)
+        self.c_t = self.w_xh.new_zeros(1, self.units)
+        self.h = self.w_xh.new_zeros(1, self.units)
 
     def forward(self, inputs):
         x = torch.matmul(inputs, self.w_xh)
 
-        if(torch.isnan(x).any()):
-            print("INPUTS : ", inputs)
-            print("X_t : ", x_t)
-            print("H : ", self.h)
-            print("X_t + H : ", x)
+        if not torch.isfinite(x).all():
+            raise ValueError("Recurrent inputs must be finite.")
 
         c_tilda = torch.tanh(torch.matmul(x, self.w_h_c))
         gamma_u = torch.sigmoid(torch.matmul(x, self.w_h_u))
