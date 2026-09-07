@@ -1,0 +1,12 @@
+numpy
+pandas
+scipy
+scikit-learn
+nltk
+matplotlib
+seaborn
+tqdm
+Pillow
+wordcloud
+jupyterlab
+ipywidgets
